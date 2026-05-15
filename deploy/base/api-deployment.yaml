@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app-api
+  labels:
+    app.kubernetes.io/name: hello-app-api
+    app.kubernetes.io/part-of: hello-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hello-app-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hello-app-api
+        app.kubernetes.io/part-of: hello-app
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/adiom-data/hello-app-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "18081"
+          ports:
+            - name: http
+              containerPort: 18081
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi

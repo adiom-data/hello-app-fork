@@ -1,0 +1,115 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  API_IMAGE: ghcr.io/adiom-data/hello-app-api
+  WEB_IMAGE: ghcr.io/adiom-data/hello-app-web
+  DEPLOY_ARTIFACT: oci://ghcr.io/adiom-data/hello-app-deploy
+  GHCR_OWNER: adiom-data
+  GHCR_API_PACKAGE: hello-app-api
+  GHCR_WEB_PACKAGE: hello-app-web
+  GHCR_DEPLOY_PACKAGE: hello-app-deploy
+  PLATFORMS: linux/amd64
+
+jobs:
+  publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set tags
+        id: meta
+        run: |
+          echo "tag=sha-${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+          echo "revision=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Verify app build
+        run: make build
+
+      - name: Render dev manifests
+        run: make render ENV=dev
+
+      - name: Render prod manifests
+        run: make render ENV=prod
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.api
+          platforms: ${{ env.PLATFORMS }}
+          push: true
+          tags: |
+            ${{ env.API_IMAGE }}:latest
+            ${{ env.API_IMAGE }}:${{ steps.meta.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=${{ steps.meta.outputs.source }}
+            org.opencontainers.image.revision=${{ steps.meta.outputs.revision }}
+            org.opencontainers.image.title=hello-app-api
+
+      - name: Build and push web image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.web
+          platforms: ${{ env.PLATFORMS }}
+          push: true
+          tags: |
+            ${{ env.WEB_IMAGE }}:latest
+            ${{ env.WEB_IMAGE }}:${{ steps.meta.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=${{ steps.meta.outputs.source }}
+            org.opencontainers.image.revision=${{ steps.meta.outputs.revision }}
+            org.opencontainers.image.title=hello-app-web
+
+      - name: Set up Flux CLI
+        uses: fluxcd/flux2/action@main
+
+      - name: Push deploy bundle
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+          SOURCE: ${{ steps.meta.outputs.source }}
+          REVISION: ${{ steps.meta.outputs.revision }}
+        run: |
+          make flux-push TAG="${TAG}" SOURCE="${SOURCE}" REVISION="${REVISION}"
+          make flux-push TAG=latest SOURCE="${SOURCE}" REVISION="${REVISION}"
+
