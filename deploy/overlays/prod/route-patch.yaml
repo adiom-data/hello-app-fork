@@ -5,3 +5,4 @@ metadata:
 spec:
   hostnames:
     - prod.hello-app.infrapad.local
+    - hello-app.prod.apps.infrapad.ai
