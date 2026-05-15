@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - api-deployment.yaml
   - api-service.yaml
+  - postgres-cluster.yaml
   - web-deployment.yaml
   - web-service.yaml
   - http-route.yaml

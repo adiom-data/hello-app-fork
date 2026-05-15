@@ -1,0 +1,22 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: app-db
+  labels:
+    app.kubernetes.io/name: app-db
+    app.kubernetes.io/part-of: hello-app
+spec:
+  instances: 1
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+  storage:
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

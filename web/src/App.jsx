@@ -66,6 +66,25 @@ export default function App() {
                   {new Date(hello.time).toLocaleString()}
                 </time>
               ) : null}
+              <dl className="facts">
+                <div>
+                  <dt>Database</dt>
+                  <dd>{hello?.dbEnabled ? "connected" : "not configured"}</dd>
+                </div>
+                {hello?.hitCount ? (
+                  <div>
+                    <dt>Stored hits</dt>
+                    <dd>{hello.hitCount}</dd>
+                  </div>
+                ) : null}
+                {hello?.lastHitAt ? (
+                  <div>
+                    <dt>Last DB write</dt>
+                    <dd>{new Date(hello.lastHitAt).toLocaleString()}</dd>
+                  </div>
+                ) : null}
+              </dl>
+              {hello?.dbError ? <p className="error inline">{hello.dbError}</p> : null}
             </div>
           )}
         </div>

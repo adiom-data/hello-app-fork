@@ -65,10 +65,14 @@ The deploy bundle contains overlays for the `dev` and `prod` namespaces. It
 expects the platform tenant registry to create the namespace and reconcile the
 bundle with tenant-scoped permissions, following the pattern in `../mtest`.
 
+The bundle also requests a tenant-local CloudNativePG database named `app-db`.
+See `deploy/DATABASE.md` for the generated service and secret names used by the
+API.
+
 The public route is exposed through the platform Gateway:
 
-- `dev.hello-app.infrapad.local`
-- `prod.hello-app.infrapad.local`
+- `hello-app-dev.infrapad.ai`
+- `hello-app-prod.infrapad.ai`
 
 The `HTTPRoute` sends `/api` to the Go API service and all other paths to the
 frontend service.

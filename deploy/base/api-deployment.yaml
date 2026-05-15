@@ -23,6 +23,24 @@ spec:
           env:
             - name: PORT
               value: "18081"
+            - name: PGHOST
+              value: app-db-rw
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: app
+            - name: PGSSLMODE
+              value: disable
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: app-db-app
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-db-app
+                  key: password
           ports:
             - name: http
               containerPort: 18081
