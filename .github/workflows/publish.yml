@@ -110,6 +110,7 @@ jobs:
           SOURCE: ${{ steps.meta.outputs.source }}
           REVISION: ${{ steps.meta.outputs.revision }}
         run: |
-          make flux-push TAG="${TAG}" SOURCE="${SOURCE}" REVISION="${REVISION}"
-          make flux-push TAG=latest SOURCE="${SOURCE}" REVISION="${REVISION}"
-
+          cp -R deploy /tmp/hello-app-deploy
+          sed -i "s/newTag: latest/newTag: ${TAG}/g" /tmp/hello-app-deploy/base/kustomization.yaml
+          make flux-push TAG="${TAG}" DEPLOY_PATH=/tmp/hello-app-deploy SOURCE="${SOURCE}" REVISION="${REVISION}"
+          make flux-push TAG=latest DEPLOY_PATH=/tmp/hello-app-deploy SOURCE="${SOURCE}" REVISION="${REVISION}"

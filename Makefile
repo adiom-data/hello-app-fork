@@ -11,6 +11,7 @@ GHCR_DEPLOY_PACKAGE ?= hello-app-deploy
 SOURCE ?= $(shell git config --get remote.origin.url 2>/dev/null || pwd)
 REVISION ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo local)
 KUSTOMIZE ?= kubectl kustomize
+DEPLOY_PATH ?= ./deploy
 
 .PHONY: build test web-build docker-build-api docker-build-web docker-push-api docker-push-web docker-buildx-push render flux-push ghcr-api-public ghcr-web-public ghcr-deploy-public ghcr-public flux-push-public
 
@@ -45,7 +46,7 @@ render:
 
 flux-push:
 	flux push artifact $(DEPLOY_ARTIFACT):$(TAG) \
-		--path=./deploy \
+		--path=$(DEPLOY_PATH) \
 		--source="$(SOURCE)" \
 		--revision="$(REVISION)"
 

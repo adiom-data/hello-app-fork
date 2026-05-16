@@ -46,6 +46,11 @@ Pushes to `main` run `.github/workflows/publish.yml`, which:
   `sha-<commit>` tags;
 - marks all three GHCR packages public.
 
+The CI-published deploy bundle pins the API and web image tags to the same
+`sha-<commit>` tag it just built. That makes the rendered Deployment pod
+templates change on each publish, so Kubernetes rolls the API and frontend pods
+instead of continuing to run an older image behind the `latest` tag.
+
 The workflow uses `GITHUB_TOKEN` with `packages: write`. If the organization
 blocks workflow-managed package visibility changes, run the same public target
 locally with a token that has package admin rights:
