@@ -32,8 +32,10 @@ This app has two production-style containers:
 - `Dockerfile.api` builds the Go API image.
 - `Dockerfile.web` builds the React static bundle and serves it with nginx.
 
-The Kubernetes manifests live in `deploy/` with overlays for the `dev` and
-`prod` namespaces. The route follows the platform pattern from `../mtest`:
+The Kubernetes manifests live in `deploy/` with overlays for `dev` and `prod`.
+Each overlay deploys into the app namespace `hello-app` in its target cluster;
+prod is the active environment, while dev is reserved for a future dev cluster.
+The route follows the platform pattern from `../mtest`:
 
 - `/api` routes to `hello-app-api`
 - `/` routes to `hello-app-web`

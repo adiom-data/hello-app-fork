@@ -4,4 +4,4 @@ metadata:
   name: hello-app
 spec:
   hostnames:
-    - hello-app-prod.infrapad.ai
+    - t-hello-app.infrapad.ai
