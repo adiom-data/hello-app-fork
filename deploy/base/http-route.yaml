@@ -6,8 +6,6 @@ spec:
   parentRefs:
     - name: public
       namespace: platform-ingress
-  hostnames:
-    - replace.example.com
   rules:
     - matches:
         - path:

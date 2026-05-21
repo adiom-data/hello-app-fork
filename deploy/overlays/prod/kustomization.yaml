@@ -5,4 +5,3 @@ resources:
   - ../../base
 patches:
   - path: patch.yaml
-  - path: route-patch.yaml

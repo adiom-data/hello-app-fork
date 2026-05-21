@@ -79,10 +79,9 @@ The bundle also requests a tenant-local CloudNativePG database named `app-db`.
 See `deploy/DATABASE.md` for the generated service and secret names used by the
 API.
 
-The public route is exposed through the platform Gateway:
-
-- `hello-app-dev.infrapad.ai`
-- `t-hello-app.infrapad.ai`
+The public route attaches to the platform Gateway without declaring
+`spec.hostnames`, so it can serve any hostname accepted by the parent Gateway
+listener for the tenant.
 
 The `HTTPRoute` sends `/api` to the Go API service and all other paths to the
 frontend service.
