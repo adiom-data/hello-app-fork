@@ -16,7 +16,7 @@ DEPLOY_PATH ?= ./deploy
 .PHONY: build test web-build docker-build-api docker-build-web docker-push-api docker-push-web docker-buildx-push render flux-push ghcr-api-public ghcr-web-public ghcr-deploy-public ghcr-public flux-push-public
 
 build:
-	go build -o /tmp/hello-app-api ./api
+	go build -o /tmp/hello-app-fork-api ./api
 	cd web && npm run build
 
 test:

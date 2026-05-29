@@ -1,4 +1,4 @@
-module hello-app
+module hello-app-fork
 
 go 1.25.0
 

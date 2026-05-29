@@ -7,11 +7,11 @@ RUN go mod download
 
 COPY api ./api
 
-RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/hello-app-api ./api
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/hello-app-fork-api ./api
 
 FROM gcr.io/distroless/static-debian12:nonroot
 
-COPY --from=build /out/hello-app-api /hello-app-api
+COPY --from=build /out/hello-app-fork-api /hello-app-fork-api
 
 EXPOSE 18081
-ENTRYPOINT ["/hello-app-api"]
+ENTRYPOINT ["/hello-app-fork-api"]

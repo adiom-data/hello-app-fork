@@ -1,4 +1,4 @@
-# Hello App
+# Hello App Fork
 
 A small sample app with a Go API and a React frontend.
 
@@ -33,11 +33,11 @@ This app has two production-style containers:
 - `Dockerfile.web` builds the React static bundle and serves it with nginx.
 
 The Kubernetes manifests live in `deploy/` with overlays for `dev` and `prod`.
-Each overlay deploys into the app namespace `hello-app` in its target cluster;
+Each overlay deploys into the app namespace `hello-app-fork` in its target cluster;
 prod is the active environment, while dev is reserved for a future dev cluster.
 The route follows the platform pattern from `../mtest`:
 
-- `/api` routes to `hello-app-api`
-- `/` routes to `hello-app-web`
+- `/api` routes to `hello-app-fork-api`
+- `/` routes to `hello-app-fork-web`
 
 See [DEPLOY.md](DEPLOY.md) for the image and Flux OCI deploy bundle commands.

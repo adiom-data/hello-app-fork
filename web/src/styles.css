@@ -102,7 +102,8 @@ h1 {
 
 .response-card {
   background: white;
-  border: 1px solid #e1d8ff;
+  border: 1px solid #d6e7ff;
+  border-top: 5px solid #35b7a4;
   border-radius: 8px;
   box-shadow: 0 18px 44px rgba(65, 53, 118, 0.14);
   overflow: hidden;
@@ -120,7 +121,7 @@ h1 {
 
 .response-title {
   align-items: center;
-  color: #443c78;
+  color: #176b61;
   display: flex;
   font-weight: 800;
   gap: 0.55rem;

@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-app-api
+  name: hello-app-fork-api
   labels:
-    app.kubernetes.io/name: hello-app-api
-    app.kubernetes.io/part-of: hello-app
+    app.kubernetes.io/name: hello-app-fork-api
+    app.kubernetes.io/part-of: hello-app-fork
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: hello-app-api
+      app.kubernetes.io/name: hello-app-fork-api
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: hello-app-api
-        app.kubernetes.io/part-of: hello-app
+        app.kubernetes.io/name: hello-app-fork-api
+        app.kubernetes.io/part-of: hello-app-fork
     spec:
       containers:
         - name: api
@@ -24,7 +24,7 @@ spec:
             - name: PORT
               value: "18081"
             - name: PGHOST
-              value: app-db-rw
+              value: hello-app-fork-db-rw
             - name: PGPORT
               value: "5432"
             - name: PGDATABASE
@@ -34,12 +34,12 @@ spec:
             - name: PGUSER
               valueFrom:
                 secretKeyRef:
-                  name: app-db-app
+                  name: hello-app-fork-db-app
                   key: username
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: app-db-app
+                  name: hello-app-fork-db-app
                   key: password
           ports:
             - name: http

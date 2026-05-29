@@ -1,10 +1,10 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: app-db
+  name: hello-app-fork-db
   labels:
-    app.kubernetes.io/name: app-db
-    app.kubernetes.io/part-of: hello-app
+    app.kubernetes.io/name: hello-app-fork-db
+    app.kubernetes.io/part-of: hello-app-fork
 spec:
   instances: 1
   bootstrap:

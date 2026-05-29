@@ -67,7 +67,7 @@ make render ENV=prod
 ```
 
 The deploy bundle contains overlays for `dev` and `prod`. Both overlays deploy
-to the app namespace `hello-app` inside their target cluster. The current active
+to the app namespace `hello-app-fork` inside their target cluster. The current active
 environment is prod; the dev overlay is kept for a future dev cluster and is not
 expected to be reconciled in the prod cluster.
 
@@ -75,7 +75,8 @@ The platform tenant registry is expected to create the target namespace in each
 cluster and reconcile the bundle with tenant-scoped permissions, following the
 pattern in `../mtest`.
 
-The bundle also requests a tenant-local CloudNativePG database named `app-db`.
+The bundle also requests a tenant-local CloudNativePG database named
+`hello-app-fork-db`.
 See `deploy/DATABASE.md` for the generated service and secret names used by the
 API.
 

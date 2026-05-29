@@ -7,7 +7,7 @@ CloudNativePG:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: app-db
+  name: hello-app-fork-db
 ```
 
 CloudNativePG creates the underlying StatefulSet, PVCs, Services,
@@ -16,7 +16,7 @@ certificates, and application credentials.
 The API connects to:
 
 ```text
-host: app-db-rw
+host: hello-app-fork-db-rw
 port: 5432
 database: app
 ```
@@ -24,7 +24,7 @@ database: app
 CloudNativePG generates the application credentials in this Secret:
 
 ```text
-app-db-app
+hello-app-fork-db-app
 ```
 
 The `/api/hello` endpoint creates a small `hello_hits` table if needed and
