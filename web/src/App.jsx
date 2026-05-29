@@ -89,6 +89,23 @@ export default function App() {
           )}
         </div>
       </section>
+
+      <footer className="web-ring" aria-label="Hello-Net web ring">
+        <div className="web-ring-panel">
+          <div className="web-ring-banner">HELLO-NET WEB RING</div>
+          <p className="web-ring-title">This site is a proud member of the Hello App Fork ring.</p>
+          <nav className="web-ring-links" aria-label="Web ring navigation">
+            <a href="#previous-site">Prev</a>
+            <a href="#random-site">Random</a>
+            <a href="#next-site">Next</a>
+          </nav>
+          <div className="web-ring-badges" aria-hidden="true">
+            <span className="badge badge-hot">HOT!</span>
+            <span className="badge badge-html">HTML 4.0</span>
+            <span className="badge badge-counter">Hits: 000042</span>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

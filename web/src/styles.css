@@ -198,6 +198,118 @@ time {
   padding: 1rem 0 0;
 }
 
+.web-ring {
+  display: flex;
+  justify-content: center;
+  padding: 0 clamp(1.5rem, 5vw, 4rem) clamp(2rem, 5vw, 4rem);
+}
+
+.web-ring-panel {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 7px, transparent 7px 14px),
+    #04047a;
+  border-color: #ffffff #11113e #11113e #ffffff;
+  border-style: ridge;
+  border-width: 6px;
+  box-shadow: 0 0 0 2px #00ffff, 0 10px 28px rgba(24, 32, 52, 0.18);
+  color: #ffff00;
+  font-family: "Comic Sans MS", "Trebuchet MS", cursive;
+  max-width: 680px;
+  padding: 0.85rem;
+  text-align: center;
+  text-shadow: 1px 1px 0 #ff00ff;
+  width: 100%;
+}
+
+.web-ring-banner {
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+  border: 2px outset #ffffff;
+  color: #000080;
+  font-family: "Courier New", monospace;
+  font-size: clamp(1.25rem, 5vw, 2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  padding: 0.35rem 0.5rem;
+  text-shadow: 1px 1px 0 #ffffff;
+}
+
+.web-ring-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0.8rem 0;
+}
+
+.web-ring-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.web-ring-links a {
+  background: #c0c0c0;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  border-style: outset;
+  border-width: 3px;
+  color: #0000ee;
+  font-family: "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  min-width: 5.5rem;
+  padding: 0.25rem 0.75rem;
+  text-decoration: underline;
+  text-shadow: none;
+}
+
+.web-ring-links a:visited {
+  color: #551a8b;
+}
+
+.web-ring-links a:hover {
+  background: #ffff00;
+  color: #ff00ff;
+}
+
+.web-ring-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+  margin-top: 0.85rem;
+}
+
+.badge {
+  align-items: center;
+  border: 2px solid #ffffff;
+  box-shadow: 2px 2px 0 #000000;
+  display: inline-flex;
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  height: 31px;
+  justify-content: center;
+  letter-spacing: 0;
+  min-width: 88px;
+  text-shadow: none;
+}
+
+.badge-hot {
+  background: #ff0000;
+  color: #ffff00;
+}
+
+.badge-html {
+  background: #ffffff;
+  color: #ff6600;
+}
+
+.badge-counter {
+  background: #000000;
+  color: #00ff00;
+  font-family: "Courier New", monospace;
+}
+
 @media (max-width: 560px) {
   .response-header {
     align-items: stretch;
