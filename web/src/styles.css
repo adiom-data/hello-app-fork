@@ -96,6 +96,18 @@ h1 {
   max-width: 520px;
 }
 
+.music-toggle {
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75), 0 10px 24px rgba(0, 0, 0, 0.24);
+  color: #11113e;
+  margin-top: 1.5rem;
+  text-shadow: 1px 1px 0 #ffffff;
+}
+
+.music-toggle:hover {
+  background: linear-gradient(135deg, #ffff00, #00ffff);
+}
+
 .workspace {
   margin: 0 auto;
   max-width: 920px;

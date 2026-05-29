@@ -1,10 +1,51 @@
-import { useEffect, useState } from "react";
-import { RefreshCcw, Server } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Music2, RefreshCcw, Server, VolumeX } from "lucide-react";
+
+const noteToFrequency = {
+  C3: 130.81,
+  D3: 146.83,
+  E3: 164.81,
+  F3: 174.61,
+  G3: 196,
+  A3: 220,
+  B3: 246.94,
+  C4: 261.63,
+  D4: 293.66,
+  E4: 329.63,
+  F4: 349.23,
+  G4: 392,
+  A4: 440,
+  B4: 493.88,
+  C5: 523.25,
+};
+
+const melody = [
+  "E4",
+  "G4",
+  "A4",
+  "C5",
+  "B4",
+  "G4",
+  "E4",
+  "D4",
+  "C4",
+  "E4",
+  "G4",
+  "B4",
+  "A4",
+  "F4",
+  "D4",
+  "C4",
+];
+
+const bassline = ["A3", "A3", "G3", "G3", "F3", "F3", "E3", "C3"];
 
 export default function App() {
   const [hello, setHello] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const audioRef = useRef(null);
 
   async function loadHello() {
     setLoading(true);
@@ -29,6 +70,100 @@ export default function App() {
     loadHello();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (audioRef.current?.timer) {
+        window.clearInterval(audioRef.current.timer);
+      }
+      audioRef.current?.context.close();
+      audioRef.current = null;
+    };
+  }, []);
+
+  function playTone(context, destination, frequency, startAt, duration, type = "square", volume = 0.12) {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, startAt);
+    gain.gain.setValueAtTime(0.0001, startAt);
+    gain.gain.exponentialRampToValueAtTime(volume, startAt + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+
+    oscillator.connect(gain);
+    gain.connect(destination);
+    oscillator.start(startAt);
+    oscillator.stop(startAt + duration + 0.02);
+  }
+
+  function scheduleSceneLoop(engine, startAt) {
+    const step = 0.18;
+
+    melody.forEach((note, index) => {
+      playTone(engine.context, engine.master, noteToFrequency[note], startAt + index * step, step * 0.82);
+      if (index % 4 === 2) {
+        playTone(
+          engine.context,
+          engine.master,
+          noteToFrequency[note] * 2,
+          startAt + index * step + step * 0.5,
+          step * 0.35,
+          "triangle",
+          0.045,
+        );
+      }
+    });
+
+    bassline.forEach((note, index) => {
+      playTone(
+        engine.context,
+        engine.master,
+        noteToFrequency[note] / 2,
+        startAt + index * step * 2,
+        step * 1.5,
+        "sawtooth",
+        0.055,
+      );
+    });
+  }
+
+  function stopSceneMusic() {
+    if (audioRef.current?.timer) {
+      window.clearInterval(audioRef.current.timer);
+    }
+    audioRef.current?.context.close();
+    audioRef.current = null;
+    setMusicPlaying(false);
+  }
+
+  async function toggleSceneMusic() {
+    if (audioRef.current) {
+      stopSceneMusic();
+      return;
+    }
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) {
+      return;
+    }
+
+    const context = new AudioContext();
+    const master = context.createGain();
+    master.gain.value = 0.22;
+    master.connect(context.destination);
+
+    const engine = { context, master, timer: null };
+    audioRef.current = engine;
+    await context.resume();
+
+    scheduleSceneLoop(engine, context.currentTime + 0.04);
+    engine.timer = window.setInterval(() => {
+      scheduleSceneLoop(engine, context.currentTime + 0.04);
+    }, 2880);
+
+    setMusicPlaying(true);
+  }
+
   return (
     <main className="app-shell">
       <section className="hero">
@@ -38,6 +173,15 @@ export default function App() {
           <p className="lede">
             A bright little frontend calling a tiny API, ready for experiments.
           </p>
+          <button
+            type="button"
+            className="music-toggle"
+            aria-pressed={musicPlaying}
+            onClick={toggleSceneMusic}
+          >
+            {musicPlaying ? <VolumeX aria-hidden="true" /> : <Music2 aria-hidden="true" />}
+            <span>{musicPlaying ? "Mute scene music" : "Play scene music"}</span>
+          </button>
         </div>
       </section>
 
