@@ -245,6 +245,43 @@ time {
   text-shadow: 1px 1px 0 #ffffff;
 }
 
+.awesome-marquee {
+  background: #000000;
+  border: 2px inset #ffffff;
+  color: #00ff00;
+  font-family: "Courier New", monospace;
+  font-size: clamp(0.95rem, 4vw, 1.25rem);
+  font-weight: 900;
+  margin-top: 0.75rem;
+  overflow: hidden;
+  padding: 0.25rem 0;
+  text-shadow: 0 0 6px #00ff00;
+  white-space: nowrap;
+}
+
+.awesome-marquee-track {
+  animation: marquee-scroll 12s linear infinite;
+  display: inline-flex;
+  gap: 2rem;
+  min-width: max-content;
+  padding-left: 100%;
+  will-change: transform;
+}
+
+.awesome-marquee-track span {
+  flex: 0 0 auto;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
 .web-ring-title {
   color: #ffffff;
   font-size: 1rem;

@@ -237,6 +237,14 @@ export default function App() {
       <footer className="web-ring" aria-label="Hello-Net web ring">
         <div className="web-ring-panel">
           <div className="web-ring-banner">HELLO-NET WEB RING</div>
+          <div className="awesome-marquee" aria-label="We are awesome">
+            <div className="awesome-marquee-track">
+              <span>We are awesome!</span>
+              <span>We are awesome!</span>
+              <span>We are awesome!</span>
+              <span>We are awesome!</span>
+            </div>
+          </div>
           <p className="web-ring-title">This site is a proud member of the Hello App Fork ring.</p>
           <nav className="web-ring-links" aria-label="Web ring navigation">
             <a href="#previous-site">Prev</a>
