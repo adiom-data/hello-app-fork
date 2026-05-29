@@ -33,10 +33,10 @@ export default function App() {
     <main className="app-shell">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Go + React sample</p>
-          <h1>Hello App</h1>
+          <p className="eyebrow">Go + React fork</p>
+          <h1>Hello App Fork</h1>
           <p className="lede">
-            A tiny frontend calling a tiny API, ready for experiments.
+            A bright little frontend calling a tiny API, ready for experiments.
           </p>
         </div>
       </section>

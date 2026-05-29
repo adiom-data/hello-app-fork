@@ -11,13 +11,13 @@ permissions:
   packages: write
 
 env:
-  API_IMAGE: ghcr.io/adiom-data/hello-app-api
-  WEB_IMAGE: ghcr.io/adiom-data/hello-app-web
-  DEPLOY_ARTIFACT: oci://ghcr.io/adiom-data/hello-app-deploy
+  API_IMAGE: ghcr.io/adiom-data/hello-app-fork-api
+  WEB_IMAGE: ghcr.io/adiom-data/hello-app-fork-web
+  DEPLOY_ARTIFACT: oci://ghcr.io/adiom-data/hello-app-fork-deploy
   GHCR_OWNER: adiom-data
-  GHCR_API_PACKAGE: hello-app-api
-  GHCR_WEB_PACKAGE: hello-app-web
-  GHCR_DEPLOY_PACKAGE: hello-app-deploy
+  GHCR_API_PACKAGE: hello-app-fork-api
+  GHCR_WEB_PACKAGE: hello-app-fork-web
+  GHCR_DEPLOY_PACKAGE: hello-app-fork-deploy
   PLATFORMS: linux/amd64
 
 jobs:
@@ -84,7 +84,7 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ steps.meta.outputs.source }}
             org.opencontainers.image.revision=${{ steps.meta.outputs.revision }}
-            org.opencontainers.image.title=hello-app-api
+            org.opencontainers.image.title=hello-app-fork-api
 
       - name: Build and push web image
         uses: docker/build-push-action@v7
@@ -99,7 +99,7 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ steps.meta.outputs.source }}
             org.opencontainers.image.revision=${{ steps.meta.outputs.revision }}
-            org.opencontainers.image.title=hello-app-web
+            org.opencontainers.image.title=hello-app-fork-web
 
       - name: Set up Flux CLI
         uses: fluxcd/flux2/action@main
@@ -110,7 +110,7 @@ jobs:
           SOURCE: ${{ steps.meta.outputs.source }}
           REVISION: ${{ steps.meta.outputs.revision }}
         run: |
-          cp -R deploy /tmp/hello-app-deploy
-          sed -i "s/newTag: latest/newTag: ${TAG}/g" /tmp/hello-app-deploy/base/kustomization.yaml
-          make flux-push TAG="${TAG}" DEPLOY_PATH=/tmp/hello-app-deploy SOURCE="${SOURCE}" REVISION="${REVISION}"
-          make flux-push TAG=latest DEPLOY_PATH=/tmp/hello-app-deploy SOURCE="${SOURCE}" REVISION="${REVISION}"
+          cp -R deploy /tmp/hello-app-fork-deploy
+          sed -i "s/newTag: latest/newTag: ${TAG}/g" /tmp/hello-app-fork-deploy/base/kustomization.yaml
+          make flux-push TAG="${TAG}" DEPLOY_PATH=/tmp/hello-app-fork-deploy SOURCE="${SOURCE}" REVISION="${REVISION}"
+          make flux-push TAG=latest DEPLOY_PATH=/tmp/hello-app-fork-deploy SOURCE="${SOURCE}" REVISION="${REVISION}"

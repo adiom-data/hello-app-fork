@@ -9,9 +9,9 @@ This repo builds three artifacts:
 Set the registry locations first:
 
 ```sh
-export API_IMAGE=ghcr.io/adiom-data/hello-app-api
-export WEB_IMAGE=ghcr.io/adiom-data/hello-app-web
-export DEPLOY_ARTIFACT=oci://ghcr.io/adiom-data/hello-app-deploy
+export API_IMAGE=ghcr.io/adiom-data/hello-app-fork-api
+export WEB_IMAGE=ghcr.io/adiom-data/hello-app-fork-web
+export DEPLOY_ARTIFACT=oci://ghcr.io/adiom-data/hello-app-fork-deploy
 export TAG=latest
 ```
 
@@ -40,9 +40,9 @@ Pushes to `main` run `.github/workflows/publish.yml`, which:
 
 - builds and verifies the app;
 - renders both Kustomize overlays;
-- pushes `hello-app-api` and `hello-app-web` images to GHCR with `latest`
+- pushes `hello-app-fork-api` and `hello-app-fork-web` images to GHCR with `latest`
   and `sha-<commit>` tags;
-- pushes the `hello-app-deploy` Flux OCI bundle with `latest` and
+- pushes the `hello-app-fork-deploy` Flux OCI bundle with `latest` and
   `sha-<commit>` tags;
 - marks all three GHCR packages public.
 

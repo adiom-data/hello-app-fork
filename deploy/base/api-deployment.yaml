@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/adiom-data/hello-app-api:latest
+          image: ghcr.io/adiom-data/hello-app-fork-api:latest
           imagePullPolicy: Always
           env:
             - name: PORT

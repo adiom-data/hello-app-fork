@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: ghcr.io/adiom-data/hello-app-web:latest
+          image: ghcr.io/adiom-data/hello-app-fork-web:latest
           imagePullPolicy: Always
           ports:
             - name: http

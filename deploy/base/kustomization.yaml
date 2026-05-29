@@ -8,7 +8,7 @@ resources:
   - web-service.yaml
   - http-route.yaml
 images:
-  - name: ghcr.io/adiom-data/hello-app-api
+  - name: ghcr.io/adiom-data/hello-app-fork-api
     newTag: latest
-  - name: ghcr.io/adiom-data/hello-app-web
+  - name: ghcr.io/adiom-data/hello-app-fork-web
     newTag: latest
