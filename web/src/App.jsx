@@ -40,6 +40,9 @@ const melody = [
 
 const bassline = ["A3", "A3", "G3", "G3", "F3", "F3", "E3", "C3"];
 
+const webRingName =
+  "dummy MCP context ok for repo adiom-data/hello-app-fork in org 4218776c-057b-44f8-aed6-238c199e8903";
+
 function formatHitCount(count) {
   if (!Number.isFinite(count)) {
     return "??????";
@@ -243,9 +246,9 @@ export default function App() {
         </div>
       </section>
 
-      <footer className="web-ring" aria-label="Hello-Net web ring">
+      <footer className="web-ring" aria-label={`${webRingName} web ring`}>
         <div className="web-ring-panel">
-          <div className="web-ring-banner">HELLO-NET WEB RING</div>
+          <div className="web-ring-banner">{webRingName} web ring</div>
           <div className="awesome-marquee" aria-label="We are awesome">
             <div className="awesome-marquee-track">
               <span>We are awesome!</span>
@@ -254,7 +257,7 @@ export default function App() {
               <span>We are awesome!</span>
             </div>
           </div>
-          <p className="web-ring-title">This site is a proud member of the Hello App Fork ring.</p>
+          <p className="web-ring-title">This site is a proud member of the {webRingName} ring.</p>
           <nav className="web-ring-links" aria-label="Web ring navigation">
             <a href="#previous-site">Prev</a>
             <a href="#random-site">Random</a>
