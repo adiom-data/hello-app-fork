@@ -320,6 +320,57 @@ time {
   color: #ff00ff;
 }
 
+.hit-counter {
+  align-items: center;
+  background: #c0c0c0;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  border-style: ridge;
+  border-width: 4px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+  margin-top: 0.85rem;
+  padding: 0.5rem 0.65rem;
+  text-shadow: none;
+}
+
+.hit-counter-label {
+  color: #000080;
+  font-family: "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.hit-counter-digits {
+  background: #000000;
+  border-color: #202020 #ffffff #ffffff #202020;
+  border-style: inset;
+  border-width: 3px;
+  display: inline-grid;
+  gap: 2px;
+  grid-auto-columns: 1.45rem;
+  grid-auto-flow: column;
+  padding: 0.2rem;
+}
+
+.hit-counter-digit {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 46%, rgba(0, 0, 0, 0.45) 48%),
+    #050505;
+  border: 1px solid #303030;
+  color: #39ff14;
+  display: inline-flex;
+  font-family: "Courier New", monospace;
+  font-size: 1.25rem;
+  font-weight: 900;
+  height: 2rem;
+  justify-content: center;
+  line-height: 1;
+  padding-top: 0.25rem;
+  text-shadow: 0 0 6px #00ff00;
+}
+
 .web-ring-badges {
   display: flex;
   flex-wrap: wrap;
