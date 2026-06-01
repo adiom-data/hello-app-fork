@@ -40,12 +40,21 @@ const melody = [
 
 const bassline = ["A3", "A3", "G3", "G3", "F3", "F3", "E3", "C3"];
 
+function formatHitCount(count) {
+  if (!Number.isFinite(count)) {
+    return "??????";
+  }
+
+  return count.toString().padStart(6, "0");
+}
+
 export default function App() {
   const [hello, setHello] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
+  const hitCounterValue = formatHitCount(hello?.hitCount);
 
   async function loadHello() {
     setLoading(true);
@@ -215,7 +224,7 @@ export default function App() {
                   <dt>Database</dt>
                   <dd>{hello?.dbEnabled ? "connected" : "not configured"}</dd>
                 </div>
-                {hello?.hitCount ? (
+                {hello?.hitCount != null ? (
                   <div>
                     <dt>Stored hits</dt>
                     <dd>{hello.hitCount}</dd>
@@ -251,10 +260,20 @@ export default function App() {
             <a href="#random-site">Random</a>
             <a href="#next-site">Next</a>
           </nav>
+          <div className="hit-counter" aria-label={`Visitor counter: ${hitCounterValue}`}>
+            <span className="hit-counter-label">You are visitor number</span>
+            <span className="hit-counter-digits" aria-hidden="true">
+              {hitCounterValue.split("").map((character, index) => (
+                <span className="hit-counter-digit" key={`${character}-${index}`}>
+                  {character}
+                </span>
+              ))}
+            </span>
+          </div>
           <div className="web-ring-badges" aria-hidden="true">
             <span className="badge badge-hot">HOT!</span>
             <span className="badge badge-html">HTML 4.0</span>
-            <span className="badge badge-counter">Hits: 000042</span>
+            <span className="badge badge-counter">Netscape Now</span>
           </div>
         </div>
       </footer>
