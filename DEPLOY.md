@@ -6,6 +6,34 @@ This repo builds three artifacts:
 - A static React frontend container image.
 - A Flux-compatible OCI artifact containing dev/prod Kubernetes manifests in `deploy/`.
 
+## Local preview
+
+The repository includes a Docker Compose preview that runs the production
+containers behind a local nginx gateway. It also starts Postgres so the API hit
+counter works.
+
+```sh
+make preview-up
+```
+
+Open the app at:
+
+```text
+http://localhost:18080
+```
+
+The gateway routes `/api` to the Go API and everything else to the frontend,
+matching the production `HTTPRoute` split. To stop the preview:
+
+```sh
+make preview-down
+```
+
+This preview only requires Docker with Compose support. If port `18080` is
+already in use, change the host port in `compose.yaml`.
+
+## Published deployment
+
 Set the registry locations first:
 
 ```sh
@@ -87,3 +115,9 @@ The public route is exposed through the platform Gateway:
 
 The `HTTPRoute` sends `/api` to the Go API service and all other paths to the
 frontend service.
+
+Publishing to the shared environment requires GHCR write access for the
+`adiom-data` organization, the Flux CLI for manual bundle pushes, and platform
+setup that reconciles the OCI bundle into a cluster with Gateway API and
+CloudNativePG installed. Without those credentials and cluster controllers, the
+local Compose preview is the available preview path.

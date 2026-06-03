@@ -32,6 +32,15 @@ This app has two production-style containers:
 - `Dockerfile.api` builds the Go API image.
 - `Dockerfile.web` builds the React static bundle and serves it with nginx.
 
+For a local production-style preview with the API, frontend, gateway, and
+Postgres, run:
+
+```sh
+make preview-up
+```
+
+Then open `http://localhost:18080`.
+
 The Kubernetes manifests live in `deploy/` with overlays for `dev` and `prod`.
 Each overlay deploys into the app namespace `hello-app-fork` in its target cluster;
 prod is the active environment, while dev is reserved for a future dev cluster.
