@@ -16,6 +16,44 @@ spec:
         app.kubernetes.io/name: hello-app-fork-api
         app.kubernetes.io/part-of: hello-app-fork
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: postgres:17-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              until pg_isready -h "$PGHOST" -p "$PGPORT" -d "$PGDATABASE" -U "$PGUSER"; do
+                sleep 2
+              done
+          env:
+            - name: PGHOST
+              value: hello-app-fork-db-rw
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: app
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: hello-app-fork-db-app
+                  key: username
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 70
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
       containers:
         - name: api
           image: ghcr.io/adiom-data/hello-app-fork-api:latest
