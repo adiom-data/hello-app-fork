@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Calculator, Delete, Music2, RefreshCcw, Server, VolumeX } from "lucide-react";
+import { Music2, RefreshCcw, Server, VolumeX } from "lucide-react";
 
 const noteToFrequency = {
   C3: 130.81,
@@ -51,38 +51,11 @@ function formatHitCount(count) {
   return count.toString().padStart(6, "0");
 }
 
-function calculate(firstValue, secondValue, operator) {
-  switch (operator) {
-    case "+":
-      return firstValue + secondValue;
-    case "-":
-      return firstValue - secondValue;
-    case "*":
-      return firstValue * secondValue;
-    case "/":
-      return secondValue === 0 ? null : firstValue / secondValue;
-    default:
-      return secondValue;
-  }
-}
-
-function formatCalculatorValue(value) {
-  if (!Number.isFinite(value)) {
-    return "Error";
-  }
-
-  return Number.parseFloat(value.toFixed(10)).toString().slice(0, 14);
-}
-
 export default function App() {
   const [hello, setHello] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [musicPlaying, setMusicPlaying] = useState(false);
-  const [calculatorValue, setCalculatorValue] = useState("0");
-  const [storedCalculatorValue, setStoredCalculatorValue] = useState(null);
-  const [calculatorOperator, setCalculatorOperator] = useState(null);
-  const [waitingForCalculatorValue, setWaitingForCalculatorValue] = useState(false);
   const audioRef = useRef(null);
   const hitCounterValue = formatHitCount(hello?.hitCount);
 
@@ -203,114 +176,6 @@ export default function App() {
     setMusicPlaying(true);
   }
 
-  function enterCalculatorDigit(digit) {
-    if (calculatorValue === "Error" || waitingForCalculatorValue) {
-      setCalculatorValue(digit);
-      setWaitingForCalculatorValue(false);
-      return;
-    }
-
-    setCalculatorValue((currentValue) =>
-      currentValue === "0" ? digit : `${currentValue}${digit}`.slice(0, 14),
-    );
-  }
-
-  function enterCalculatorDecimal() {
-    if (calculatorValue === "Error" || waitingForCalculatorValue) {
-      setCalculatorValue("0.");
-      setWaitingForCalculatorValue(false);
-      return;
-    }
-
-    if (!calculatorValue.includes(".")) {
-      setCalculatorValue((currentValue) => `${currentValue}.`);
-    }
-  }
-
-  function clearCalculator() {
-    setCalculatorValue("0");
-    setStoredCalculatorValue(null);
-    setCalculatorOperator(null);
-    setWaitingForCalculatorValue(false);
-  }
-
-  function backspaceCalculator() {
-    if (waitingForCalculatorValue || calculatorValue === "Error") {
-      setCalculatorValue("0");
-      setWaitingForCalculatorValue(false);
-      return;
-    }
-
-    setCalculatorValue((currentValue) =>
-      currentValue.length > 1 ? currentValue.slice(0, -1) : "0",
-    );
-  }
-
-  function toggleCalculatorSign() {
-    if (calculatorValue === "0" || calculatorValue === "Error") {
-      return;
-    }
-
-    setCalculatorValue((currentValue) =>
-      currentValue.startsWith("-") ? currentValue.slice(1) : `-${currentValue}`,
-    );
-  }
-
-  function applyCalculatorPercent() {
-    if (calculatorValue === "Error") {
-      return;
-    }
-
-    setCalculatorValue(formatCalculatorValue(Number(calculatorValue) / 100));
-  }
-
-  function chooseCalculatorOperator(nextOperator) {
-    if (calculatorValue === "Error") {
-      clearCalculator();
-      return;
-    }
-
-    const inputValue = Number(calculatorValue);
-
-    if (calculatorOperator && storedCalculatorValue !== null && !waitingForCalculatorValue) {
-      const result = calculate(storedCalculatorValue, inputValue, calculatorOperator);
-
-      if (result === null) {
-        setCalculatorValue("Error");
-        setStoredCalculatorValue(null);
-        setCalculatorOperator(null);
-        setWaitingForCalculatorValue(true);
-        return;
-      }
-
-      setCalculatorValue(formatCalculatorValue(result));
-      setStoredCalculatorValue(result);
-    } else {
-      setStoredCalculatorValue(inputValue);
-    }
-
-    setCalculatorOperator(nextOperator);
-    setWaitingForCalculatorValue(true);
-  }
-
-  function solveCalculator() {
-    if (!calculatorOperator || storedCalculatorValue === null || calculatorValue === "Error") {
-      return;
-    }
-
-    const result = calculate(storedCalculatorValue, Number(calculatorValue), calculatorOperator);
-
-    if (result === null) {
-      setCalculatorValue("Error");
-    } else {
-      setCalculatorValue(formatCalculatorValue(result));
-    }
-
-    setStoredCalculatorValue(null);
-    setCalculatorOperator(null);
-    setWaitingForCalculatorValue(true);
-  }
-
   return (
     <main className="app-shell">
       <section className="hero">
@@ -415,114 +280,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      <section className="calculator-section" aria-labelledby="calculator-title">
-        <div className="calculator-panel">
-          <div className="calculator-header">
-            <div className="calculator-title" id="calculator-title">
-              <Calculator aria-hidden="true" />
-              <span>Calculator</span>
-            </div>
-            <div className="calculator-status" aria-hidden="true">
-              {calculatorOperator ? `${calculatorOperator} ready` : "online"}
-            </div>
-          </div>
-          <output className="calculator-display" aria-live="polite">
-            {calculatorValue}
-          </output>
-          <div className="calculator-keys">
-            <button type="button" className="calculator-key utility" onClick={clearCalculator}>
-              AC
-            </button>
-            <button type="button" className="calculator-key utility" onClick={toggleCalculatorSign}>
-              +/-
-            </button>
-            <button type="button" className="calculator-key utility" onClick={applyCalculatorPercent}>
-              %
-            </button>
-            <button
-              type="button"
-              className="calculator-key operator"
-              aria-label="Divide"
-              onClick={() => chooseCalculatorOperator("/")}
-            >
-              /
-            </button>
-
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("7")}>
-              7
-            </button>
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("8")}>
-              8
-            </button>
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("9")}>
-              9
-            </button>
-            <button
-              type="button"
-              className="calculator-key operator"
-              aria-label="Multiply"
-              onClick={() => chooseCalculatorOperator("*")}
-            >
-              x
-            </button>
-
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("4")}>
-              4
-            </button>
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("5")}>
-              5
-            </button>
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("6")}>
-              6
-            </button>
-            <button
-              type="button"
-              className="calculator-key operator"
-              aria-label="Subtract"
-              onClick={() => chooseCalculatorOperator("-")}
-            >
-              -
-            </button>
-
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("1")}>
-              1
-            </button>
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("2")}>
-              2
-            </button>
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("3")}>
-              3
-            </button>
-            <button
-              type="button"
-              className="calculator-key operator"
-              aria-label="Add"
-              onClick={() => chooseCalculatorOperator("+")}
-            >
-              +
-            </button>
-
-            <button
-              type="button"
-              className="calculator-key utility"
-              aria-label="Backspace"
-              onClick={backspaceCalculator}
-            >
-              <Delete aria-hidden="true" />
-            </button>
-            <button type="button" className="calculator-key" onClick={() => enterCalculatorDigit("0")}>
-              0
-            </button>
-            <button type="button" className="calculator-key" onClick={enterCalculatorDecimal}>
-              .
-            </button>
-            <button type="button" className="calculator-key equals" onClick={solveCalculator}>
-              =
-            </button>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
