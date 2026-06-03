@@ -25,7 +25,7 @@ type helloResponse struct {
 func main() {
 	db, err := openDatabase()
 	if err != nil {
-		log.Printf("database disabled: %v", err)
+		log.Fatal(err)
 	}
 	if db != nil {
 		defer db.Close()
@@ -91,7 +91,7 @@ func healthHandler(db *sql.DB) http.HandlerFunc {
 
 func openDatabase() (*sql.DB, error) {
 	if os.Getenv("PGHOST") == "" {
-		return nil, fmt.Errorf("PGHOST is not set")
+		return nil, nil
 	}
 
 	db, err := sql.Open("pgx", postgresDSN())

@@ -6,9 +6,6 @@ spec:
   parentRefs:
     - name: public
       namespace: platform-ingress
-  hostnames:
-    - t-testuser.infrapad.ai
-    - app.adiom.io
   rules:
     - matches:
         - path:
