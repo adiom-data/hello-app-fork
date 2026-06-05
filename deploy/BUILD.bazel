@@ -1,0 +1,74 @@
+load(
+    "@rules_flux_deploy//flux_deploy:defs.bzl",
+    "deploy_image",
+    "image_kustomization",
+    "publish_bundle_set",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "deploy_srcs",
+    srcs = glob(["**"]),
+)
+
+deploy_image(
+    name = "api_image",
+    image = "//:api_image",
+    repository_suffix = "hello-app-fork-api",
+    yaml_ref = "ghcr.io/adiom-data/hello-app-fork-api",
+)
+
+deploy_image(
+    name = "web_image",
+    image = "//:web_image",
+    repository_suffix = "hello-app-fork-web",
+    yaml_ref = "ghcr.io/adiom-data/hello-app-fork-web",
+)
+
+image_kustomization(
+    name = "app_deploy",
+    artifact_suffix = "hello-app-fork-deploy",
+    bundle_name = "app",
+    images = [
+        ":api_image",
+        ":web_image",
+    ],
+    kustomize_dirs = ["base"],
+    overlay_path = "overlays/prod",
+    source_prefix = "deploy",
+    srcs = [":deploy_srcs"],
+)
+
+image_kustomization(
+    name = "app_preview_deploy",
+    artifact_suffix = "hello-app-fork-deploy",
+    bundle_name = "app",
+    images = [
+        ":api_image",
+        ":web_image",
+    ],
+    kustomize_dirs = ["base"],
+    overlay_path = "overlays/preview",
+    repository_prefix_override_all = "{STABLE_REFERENCE_PREFIX}",
+    source_prefix = "deploy",
+    srcs = [":deploy_srcs"],
+    stamp = True,
+)
+
+publish_bundle_set(
+    name = "publish",
+    artifact_prefix = "ghcr.io/adiom-data",
+    bundles = [":app_deploy"],
+    push_prefix = "ghcr.io/adiom-data",
+    tag = "latest",
+)
+
+publish_bundle_set(
+    name = "publish_preview",
+    artifact_prefix = "{STABLE_ARTIFACT_PREFIX}",
+    bundles = [":app_preview_deploy"],
+    push_prefix = "{STABLE_PUSH_PREFIX}",
+    stamp = True,
+    tag = "{STABLE_TAG}",
+)

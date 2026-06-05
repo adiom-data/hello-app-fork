@@ -1,0 +1,50 @@
+module(
+    name = "hello_app_fork",
+    version = "0.1.0",
+)
+
+bazel_dep(name = "rules_oci", version = "2.3.0")
+bazel_dep(name = "rules_flux_deploy", version = "0.1.0")
+git_override(
+    module_name = "rules_flux_deploy",
+    commit = "403dcec8ab69f805470c362a7d26ac268a143bd7",
+    remote = "https://github.com/adiom-data/bazel-rules.git",
+)
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "nginx_unprivileged",
+    image = "index.docker.io/nginxinc/nginx-unprivileged",
+    platforms = ["linux/amd64"],
+    reproducible = False,
+    tag = "1.29-alpine",
+)
+use_repo(
+    oci,
+    "nginx_unprivileged",
+    "nginx_unprivileged_linux_amd64",
+)
+
+flux_deploy_deps = use_extension(
+    "@rules_flux_deploy//flux_deploy:extensions.bzl",
+    "flux_deploy_dependencies",
+)
+use_repo(flux_deploy_deps, "rules_flux_deploy_tools")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "go_sdk",
+    build_file_content = """
+filegroup(
+    name = "all",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+
+exports_files(["bin/go"])
+""",
+    sha256 = "2852af0cb20a13139b3448992e69b868e50ed0f8a1e5940ee1de9e19a123b613",
+    strip_prefix = "go",
+    urls = ["https://go.dev/dl/go1.25.0.linux-amd64.tar.gz"],
+)
