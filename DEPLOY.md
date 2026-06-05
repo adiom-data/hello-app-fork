@@ -1,10 +1,28 @@
 # Deploy Artifact
 
-This repo builds three artifacts:
+This repo builds these deployment artifacts:
 
 - A Go API container image.
 - A static React frontend container image.
-- A Flux-compatible OCI artifact containing dev/prod Kubernetes manifests in `deploy/`.
+- A Flux-compatible app OCI artifact containing Kubernetes manifests in `deploy/app/`.
+- A Flux-compatible database OCI artifact containing CloudNativePG manifests in
+  `deploy/database/`.
+
+The AdiomBot platform publish entrypoints are:
+
+```sh
+bazel run //deploy:publish_all
+bazel build //deploy:publish_manifest
+
+bazel run //deploy:publish_preview_all
+bazel build //deploy:publish_preview_manifest
+```
+
+The generated manifests list the stable bundle names, OCI bundle references,
+overlay paths, and force semantics used by the platform reconciler. Production
+uses `ghcr.io/adiom-data` references and `overlays/prod`; preview uses stamped
+`{STABLE_PREVIEW_REFERENCE_PREFIX}` and `{STABLE_PREVIEW_TAG}` values with
+`overlays/preview`.
 
 Set the registry locations first:
 

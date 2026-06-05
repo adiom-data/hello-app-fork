@@ -12,6 +12,16 @@ filegroup(
     srcs = glob(["**"]),
 )
 
+filegroup(
+    name = "app_deploy_srcs",
+    srcs = glob(["app/**"]),
+)
+
+filegroup(
+    name = "database_deploy_srcs",
+    srcs = glob(["database/**"]),
+)
+
 deploy_image(
     name = "api_image",
     image = "//:api_image",
@@ -37,8 +47,8 @@ image_kustomization(
     ],
     kustomize_dirs = ["base"],
     overlay_path = "overlays/prod",
-    source_prefix = "deploy",
-    srcs = [":deploy_srcs"],
+    source_prefix = "deploy/app",
+    srcs = [":app_deploy_srcs"],
 )
 
 image_kustomization(
@@ -53,8 +63,31 @@ image_kustomization(
     kustomize_dirs = ["base"],
     overlay_path = "overlays/preview",
     repository_prefix_override_all = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
-    source_prefix = "deploy",
-    srcs = [":deploy_srcs"],
+    source_prefix = "deploy/app",
+    srcs = [":app_deploy_srcs"],
+    stamp = True,
+)
+
+image_kustomization(
+    name = "database_deploy",
+    artifact_suffix = "hello-app-fork-database-deploy",
+    bundle_name = "database",
+    force = False,
+    images = [],
+    overlay_path = "overlays/prod",
+    source_prefix = "deploy/database",
+    srcs = [":database_deploy_srcs"],
+)
+
+image_kustomization(
+    name = "database_preview_deploy",
+    artifact_suffix = "hello-app-fork-database-deploy",
+    bundle_name = "database",
+    force = False,
+    images = [],
+    overlay_path = "overlays/preview",
+    source_prefix = "deploy/database",
+    srcs = [":database_deploy_srcs"],
     stamp = True,
 )
 
@@ -62,7 +95,10 @@ publish_bundle_set(
     name = "publish",
     all_name = "publish_all",
     artifact_prefix = "ghcr.io/adiom-data",
-    bundles = [":app_deploy"],
+    bundles = [
+        ":database_deploy",
+        ":app_deploy",
+    ],
     push_prefix = "ghcr.io/adiom-data",
     tag = "latest",
 )
@@ -71,7 +107,10 @@ publish_bundle_set(
     name = "publish_preview",
     all_name = "publish_preview_all",
     artifact_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
-    bundles = [":app_preview_deploy"],
+    bundles = [
+        ":database_preview_deploy",
+        ":app_preview_deploy",
+    ],
     push_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
     stamp = True,
     tag = "{STABLE_PREVIEW_TAG}",
