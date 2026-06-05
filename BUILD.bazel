@@ -1,0 +1,82 @@
+load("@rules_oci//oci:defs.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+genrule(
+    name = "api_layer",
+    srcs = glob(["api/**"]) + [
+        "go.mod",
+        "go.sum",
+        "@go_sdk//:all",
+        "@go_sdk//:bin/go",
+    ],
+    outs = ["api_layer.tar"],
+    cmd = """
+set -euo pipefail
+execroot="$$PWD"
+out="$$execroot/$@"
+work="$(@D)/api_work"
+rm -rf "$$work"
+mkdir -p "$$work"
+cp -RL api go.mod go.sum "$$work"/
+cd "$$work"
+go_tool="$$execroot/$(location @go_sdk//:bin/go)"
+export GOROOT="$$(dirname "$$(dirname "$$go_tool")")"
+export CGO_ENABLED=0
+export GOOS=linux
+export GOCACHE="$$PWD/.gocache"
+export GOPATH="$$PWD/.gopath"
+"$$go_tool" build -trimpath -ldflags="-s -w" -o hello-app-fork-api ./api
+tar --mtime="UTC 1970-01-01" --owner=0 --group=0 --numeric-owner -cf "$$out" hello-app-fork-api
+""",
+)
+
+oci_image(
+    name = "api_image",
+    architecture = "amd64",
+    entrypoint = ["/hello-app-fork-api"],
+    exposed_ports = ["18081"],
+    os = "linux",
+    tars = [":api_layer"],
+)
+
+filegroup(
+    name = "web_srcs",
+    srcs = glob(
+        ["web/**"],
+        exclude = [
+            "web/dist/**",
+            "web/node_modules/**",
+        ],
+    ),
+)
+
+genrule(
+    name = "web_layer",
+    srcs = [":web_srcs"],
+    outs = ["web_layer.tar"],
+    cmd = """
+set -euo pipefail
+execroot="$$PWD"
+out="$$execroot/$@"
+work="$(@D)/web_work"
+root="$(@D)/web_root"
+rm -rf "$$work" "$$root"
+mkdir -p "$$work" "$$root/usr/share/nginx/html" "$$root/etc/nginx/conf.d"
+cp -RL web "$$work"/
+cd "$$work/web"
+npm ci
+npm run build
+cp -R dist/. "$$execroot/$$root/usr/share/nginx/html/"
+cp nginx/default.conf "$$execroot/$$root/etc/nginx/conf.d/default.conf"
+cd "$$execroot/$$root"
+tar --mtime="UTC 1970-01-01" --owner=0 --group=0 --numeric-owner -cf "$$out" .
+""",
+)
+
+oci_image(
+    name = "web_image",
+    base = "@nginx_unprivileged_linux_amd64",
+    exposed_ports = ["8080"],
+    tars = [":web_layer"],
+)

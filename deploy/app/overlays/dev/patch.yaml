@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app-fork-api
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: api
+          resources:
+            requests:
+              cpu: 5m
+              memory: 24Mi
+            limits:
+              cpu: 50m
+              memory: 48Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app-fork-web
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: web
+          resources:
+            requests:
+              cpu: 5m
+              memory: 24Mi
+            limits:
+              cpu: 50m
+              memory: 48Mi
