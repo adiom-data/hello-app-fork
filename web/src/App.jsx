@@ -41,7 +41,7 @@ const melody = [
 const bassline = ["A3", "A3", "G3", "G3", "F3", "F3", "E3", "C3"];
 
 const webRingName = "dummy MCP context ok";
-const marqueeMessage = "dummy MCP context ok for repo adiom-data/hello-app-fork in org 4218776c-057b-44f8-aed6-238c199e8903";
+const marqueeMessage = "dummy MCP context ok for repo adiom-data/hello-app-fork";
 
 function formatHitCount(count) {
   if (!Number.isFinite(count)) {

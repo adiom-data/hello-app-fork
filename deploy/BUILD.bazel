@@ -50,7 +50,7 @@ image_kustomization(
     ],
     kustomize_dirs = ["base"],
     overlay_path = "overlays/preview",
-    repository_prefix_override_all = "{STABLE_REFERENCE_PREFIX}",
+    repository_prefix_override_all = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
     source_prefix = "deploy",
     srcs = [":deploy_srcs"],
     stamp = True,
@@ -66,9 +66,9 @@ publish_bundle_set(
 
 publish_bundle_set(
     name = "publish_preview",
-    artifact_prefix = "{STABLE_ARTIFACT_PREFIX}",
+    artifact_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
     bundles = [":app_preview_deploy"],
-    push_prefix = "{STABLE_PUSH_PREFIX}",
+    push_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
     stamp = True,
-    tag = "{STABLE_TAG}",
+    tag = "{STABLE_PREVIEW_TAG}",
 )
