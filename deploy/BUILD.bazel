@@ -30,6 +30,7 @@ image_kustomization(
     name = "app_deploy",
     artifact_suffix = "hello-app-fork-deploy",
     bundle_name = "app",
+    force = False,
     images = [
         ":api_image",
         ":web_image",
@@ -44,6 +45,7 @@ image_kustomization(
     name = "app_preview_deploy",
     artifact_suffix = "hello-app-fork-deploy",
     bundle_name = "app",
+    force = False,
     images = [
         ":api_image",
         ":web_image",
@@ -58,6 +60,7 @@ image_kustomization(
 
 publish_bundle_set(
     name = "publish",
+    all_name = "publish_all",
     artifact_prefix = "ghcr.io/adiom-data",
     bundles = [":app_deploy"],
     push_prefix = "ghcr.io/adiom-data",
@@ -66,6 +69,7 @@ publish_bundle_set(
 
 publish_bundle_set(
     name = "publish_preview",
+    all_name = "publish_preview_all",
     artifact_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
     bundles = [":app_preview_deploy"],
     push_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
