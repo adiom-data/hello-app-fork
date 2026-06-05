@@ -260,7 +260,7 @@ time {
 }
 
 .awesome-marquee-track {
-  animation: marquee-scroll 12s linear infinite;
+  animation: marquee-scroll 24s linear infinite;
   display: inline-flex;
   gap: 2rem;
   min-width: max-content;
