@@ -181,7 +181,10 @@ export default function App() {
       <section className="hero">
         <div className="hero-copy">
           <p className="eyebrow">Go + React fork</p>
-          <h1>Hello App Fork</h1>
+          <h1 className="hero-title">
+            <span>Hello App</span>
+            <span>Fork</span>
+          </h1>
           <p className="lede">
             A bright little frontend calling a tiny API, ready for experiments.
           </p>
