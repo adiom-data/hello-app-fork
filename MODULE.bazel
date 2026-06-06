@@ -5,6 +5,9 @@ module(
 
 bazel_dep(name = "rules_oci", version = "2.3.0")
 bazel_dep(name = "rules_flux_deploy", version = "0.1.0")
+bazel_dep(name = "aspect_rules_js", version = "3.2.1")
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5", repo_name = "bazel_lib")
+
 git_override(
     module_name = "rules_flux_deploy",
     commit = "ff552d6f53db8efa4f8dc48159eb3955593c584d",
@@ -30,6 +33,19 @@ flux_deploy_deps = use_extension(
     "flux_deploy_dependencies",
 )
 use_repo(flux_deploy_deps, "rules_flux_deploy_tools")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "npm",
+    data = [
+        "//web:package.json",
+        "//web:pnpm-workspace.yaml",
+    ],
+    npm_package_lock = "//web:package-lock.json",
+    pnpm_lock = "//web:pnpm-lock.yaml",
+    update_pnpm_lock = True,
+)
+use_repo(npm, "npm")
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 

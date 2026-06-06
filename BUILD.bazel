@@ -1,34 +1,24 @@
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@bazel_lib//lib:tar.bzl", "tar")
 load("@rules_oci//oci:defs.bzl", "oci_image")
+load("//tools:go_binary.bzl", "go_api_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-genrule(
-    name = "api_layer",
+go_api_binary(
+    name = "hello-app-fork-api",
     srcs = glob(["api/**"]) + [
         "go.mod",
         "go.sum",
-        "@go_sdk//:all",
-        "@go_sdk//:bin/go",
     ],
-    outs = ["api_layer.tar"],
-    cmd = """
-set -euo pipefail
-execroot="$$PWD"
-out="$$execroot/$@"
-work="$(@D)/api_work"
-rm -rf "$$work"
-mkdir -p "$$work"
-cp -RL api go.mod go.sum "$$work"/
-cd "$$work"
-go_tool="$$execroot/$(location @go_sdk//:bin/go)"
-export GOROOT="$$(dirname "$$(dirname "$$go_tool")")"
-export CGO_ENABLED=0
-export GOOS=linux
-export GOCACHE="$$PWD/.gocache"
-export GOPATH="$$PWD/.gopath"
-"$$go_tool" build -trimpath -ldflags="-s -w" -o hello-app-fork-api ./api
-tar --mtime="UTC 1970-01-01" --owner=0 --group=0 --numeric-owner -cf "$$out" hello-app-fork-api
-""",
+    go = "@go_sdk//:bin/go",
+    sdk = "@go_sdk//:all",
+)
+
+tar(
+    name = "api_layer",
+    include_runfiles = False,
+    srcs = [":hello-app-fork-api"],
 )
 
 oci_image(
@@ -40,38 +30,26 @@ oci_image(
     tars = [":api_layer"],
 )
 
-filegroup(
-    name = "web_srcs",
-    srcs = glob(
-        ["web/**"],
-        exclude = [
-            "web/dist/**",
-            "web/node_modules/**",
-        ],
-    ),
+copy_to_directory(
+    name = "web_layer_root",
+    srcs = [
+        "//web:dist",
+        "//web:nginx/default.conf",
+    ],
+    replace_prefixes = {
+        "default.conf": "etc/nginx/conf.d/default.conf",
+        "dist": "usr/share/nginx/html",
+    },
+    root_paths = [
+        "web",
+        "web/nginx",
+    ],
 )
 
-genrule(
+tar(
     name = "web_layer",
-    srcs = [":web_srcs"],
-    outs = ["web_layer.tar"],
-    cmd = """
-set -euo pipefail
-execroot="$$PWD"
-out="$$execroot/$@"
-work="$(@D)/web_work"
-root="$(@D)/web_root"
-rm -rf "$$work" "$$root"
-mkdir -p "$$work" "$$root/usr/share/nginx/html" "$$root/etc/nginx/conf.d"
-cp -RL web "$$work"/
-cd "$$work/web"
-npm ci
-npm run build
-cp -R dist/. "$$execroot/$$root/usr/share/nginx/html/"
-cp nginx/default.conf "$$execroot/$$root/etc/nginx/conf.d/default.conf"
-cd "$$execroot/$$root"
-tar --mtime="UTC 1970-01-01" --owner=0 --group=0 --numeric-owner -cf "$$out" .
-""",
+    args = ["-s", "#^web_layer_root/##"],
+    srcs = [":web_layer_root"],
 )
 
 oci_image(
