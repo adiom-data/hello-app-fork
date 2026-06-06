@@ -1,0 +1,50 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_run_binary")
+load("@bazel_lib//lib:directory_path.bzl", "directory_path")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["nginx/default.conf"])
+
+npm_link_all_packages()
+
+filegroup(
+    name = "web_sources",
+    srcs = glob(
+        [
+            "index.html",
+            "package.json",
+            "src/**",
+            "vite.config.js",
+        ],
+    ),
+)
+
+directory_path(
+    name = "vite_entry_point",
+    directory = ":node_modules/vite/dir",
+    path = "bin/vite.js",
+)
+
+js_binary(
+    name = "vite",
+    copy_data_to_bin = False,
+    data = [
+        ":node_modules",
+        ":web_sources",
+    ],
+    entry_point = ":vite_entry_point",
+)
+
+js_run_binary(
+    name = "dist",
+    srcs = [
+        ":node_modules",
+        ":web_sources",
+    ],
+    args = ["build"],
+    chdir = package_name(),
+    out_dirs = ["dist"],
+    tool = ":vite",
+    use_execroot_entry_point = False,
+)
