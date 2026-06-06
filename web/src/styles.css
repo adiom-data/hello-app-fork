@@ -1,6 +1,6 @@
 :root {
   color: #182034;
-  background: #fff7e7;
+  background: #000080;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
@@ -51,10 +51,36 @@ button svg,
 
 .app-shell {
   background:
-    radial-gradient(circle at 12% 18%, rgba(255, 211, 110, 0.55), transparent 24rem),
-    radial-gradient(circle at 88% 6%, rgba(53, 183, 164, 0.38), transparent 22rem),
-    linear-gradient(180deg, #fff7e7 0%, #f4f8ff 48%, #f9f2ff 100%);
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 12px),
+    repeating-linear-gradient(135deg, rgba(255, 0, 255, 0.18) 0 1px, transparent 1px 18px),
+    linear-gradient(180deg, #000080 0%, #25005f 52%, #008080 100%);
   min-height: 100vh;
+  position: relative;
+}
+
+.app-shell::before,
+.app-shell::after {
+  content: "";
+  display: block;
+  height: 18px;
+}
+
+.app-shell::before {
+  background: repeating-linear-gradient(
+    90deg,
+    #ff00ff 0 24px,
+    #00ffff 24px 48px,
+    #ffff00 48px 72px,
+    #0000ff 72px 96px
+  );
+  border-bottom: 4px ridge #ffffff;
+}
+
+.app-shell::after {
+  background:
+    repeating-linear-gradient(90deg, #000000 0 10px, #ffffff 10px 20px),
+    #000000;
+  border-top: 4px ridge #ffffff;
 }
 
 .hero {
