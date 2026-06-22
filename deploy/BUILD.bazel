@@ -47,6 +47,7 @@ image_kustomization(
     ],
     kustomize_dirs = ["base"],
     overlay_path = "./overlays/prod",
+    repository_prefix_override_all = "{STABLE_PRODUCTION_REFERENCE_PREFIX}",
     source_prefix = "deploy/app",
     srcs = [":app_deploy_srcs"],
 )
@@ -94,24 +95,28 @@ image_kustomization(
 publish_bundle_set(
     name = "publish",
     all_name = "publish_all",
-    artifact_prefix = "ghcr.io/adiom-data",
     bundles = [
         ":database_deploy",
         ":app_deploy",
     ],
-    push_prefix = "ghcr.io/adiom-data",
-    tag = "latest",
+    compare_tag = "latest",
+    push_prefix = "{STABLE_PRODUCTION_REFERENCE_PREFIX}",
+    push_tags = [
+        "{STABLE_GIT_COMMIT}",
+        "latest",
+    ],
+    manifest_tag = "release",
+    skip_existing = True,
+    stamp = True,
 )
 
 publish_bundle_set(
     name = "publish_preview",
     all_name = "publish_preview_all",
-    artifact_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
     bundles = [
         ":database_preview_deploy",
         ":app_preview_deploy",
     ],
     push_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
     stamp = True,
-    tag = "{STABLE_PREVIEW_TAG}",
 )

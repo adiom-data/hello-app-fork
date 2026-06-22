@@ -10,7 +10,7 @@ bazel_dep(name = "aspect_bazel_lib", version = "2.22.5", repo_name = "bazel_lib"
 
 git_override(
     module_name = "rules_flux_deploy",
-    commit = "ff552d6f53db8efa4f8dc48159eb3955593c584d",
+    commit = "1cbf7a256d46936c6c4c9b3723f01d6da53a87cd",
     remote = "https://github.com/adiom-data/bazel-rules.git",
 )
 
