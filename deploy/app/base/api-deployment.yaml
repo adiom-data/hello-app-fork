@@ -41,6 +41,12 @@ spec:
                 secretKeyRef:
                   name: hello-app-fork-db-app
                   key: password
+            - name: MY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: my-secret
+                  key: MY_SECRET
+                  optional: true
           ports:
             - name: http
               containerPort: 18081

@@ -50,7 +50,7 @@ func main() {
 func helloHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response := helloResponse{
-			Message:   "Hello from Go!",
+			Message:   helloMessage(),
 			Time:      time.Now().UTC(),
 			DBEnabled: db != nil,
 		}
@@ -68,6 +68,14 @@ func helloHandler(db *sql.DB) http.HandlerFunc {
 
 		writeJSON(w, http.StatusOK, response)
 	}
+}
+
+func helloMessage() string {
+	secret := os.Getenv("MY_SECRET")
+	if secret == "" {
+		secret = "(MY_SECRET is not set)"
+	}
+	return fmt.Sprintf("Hello from Go! MY_SECRET: %s", secret)
 }
 
 func healthHandler(db *sql.DB) http.HandlerFunc {
