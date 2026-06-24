@@ -75,7 +75,7 @@ func helloMessage() string {
 	if secret == "" {
 		secret = "(MY_SECRET is not set)"
 	}
-	return fmt.Sprintf("Hello from Go! MY_SECRET: %s", secret)
+	return fmt.Sprintf("Hello from Go! MY_SECRET!: %s", secret)
 }
 
 func healthHandler(db *sql.DB) http.HandlerFunc {
