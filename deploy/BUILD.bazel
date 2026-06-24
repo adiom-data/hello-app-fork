@@ -47,9 +47,10 @@ image_kustomization(
     ],
     kustomize_dirs = ["base"],
     overlay_path = "./overlays/prod",
-    repository_prefix_override_all = "{STABLE_PRODUCTION_REFERENCE_PREFIX}",
+    repository_prefix_override_all = "{STABLE_REFERENCE_PREFIX}",
     source_prefix = "deploy/app",
     srcs = [":app_deploy_srcs"],
+    stamp = True,
 )
 
 image_kustomization(
@@ -63,7 +64,7 @@ image_kustomization(
     ],
     kustomize_dirs = ["base"],
     overlay_path = "./overlays/preview",
-    repository_prefix_override_all = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
+    repository_prefix_override_all = "{STABLE_REFERENCE_PREFIX}",
     source_prefix = "deploy/app",
     srcs = [":app_deploy_srcs"],
     stamp = True,
@@ -78,6 +79,7 @@ image_kustomization(
     overlay_path = "./overlays/prod",
     source_prefix = "deploy/database",
     srcs = [":database_deploy_srcs"],
+    stamp = True,
 )
 
 image_kustomization(
@@ -94,17 +96,11 @@ image_kustomization(
 
 publish_bundle_set(
     name = "publish",
-    all_name = "publish_all",
     bundles = [
         ":database_deploy",
         ":app_deploy",
     ],
-    compare_tag = "latest",
-    push_prefix = "{STABLE_PRODUCTION_REFERENCE_PREFIX}",
-    push_tags = [
-        "{STABLE_GIT_COMMIT}",
-        "latest",
-    ],
+    push_prefix = "{STABLE_REFERENCE_PREFIX}",
     manifest_tag = "release",
     skip_existing = True,
     stamp = True,
@@ -117,6 +113,6 @@ publish_bundle_set(
         ":database_preview_deploy",
         ":app_preview_deploy",
     ],
-    push_prefix = "{STABLE_PREVIEW_REFERENCE_PREFIX}",
+    push_prefix = "{STABLE_REFERENCE_PREFIX}",
     stamp = True,
 )
