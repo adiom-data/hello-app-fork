@@ -1,24 +1,29 @@
 load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@bazel_lib//lib:tar.bzl", "tar")
+load("@rules_go//go:def.bzl", "go_binary")
 load("@rules_oci//oci:defs.bzl", "oci_image")
-load("//tools:go_binary.bzl", "go_api_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-go_api_binary(
+go_binary(
     name = "hello-app-fork-api",
-    srcs = glob(["api/**"]) + [
-        "go.mod",
-        "go.sum",
-    ],
-    go = "@go_sdk//:bin/go",
-    sdk = "@go_sdk//:all",
+    embed = ["//api:api"],
+    goarch = "amd64",
+    goos = "linux",
+    pure = "on",
+)
+
+copy_to_directory(
+    name = "api_layer_root",
+    srcs = [":hello-app-fork-api"],
+    root_paths = ["hello-app-fork-api_"],
 )
 
 tar(
     name = "api_layer",
     include_runfiles = False,
-    srcs = [":hello-app-fork-api"],
+    args = ["-s", "#^api_layer_root/##"],
+    srcs = [":api_layer_root"],
 )
 
 oci_image(

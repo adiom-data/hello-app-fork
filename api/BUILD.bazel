@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "api",
+    srcs = ["main.go"],
+    importpath = "hello-app-fork/api",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_jackc_pgx_v5//stdlib"],
+)
+
+go_test(
+    name = "api_test",
+    srcs = ["main_test.go"],
+    embed = [":api"],
+)
