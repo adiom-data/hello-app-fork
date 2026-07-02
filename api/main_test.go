@@ -62,7 +62,7 @@ func TestHelloHandlerWithoutDatabase(t *testing.T) {
 	if response.LastHitAt != nil {
 		t.Fatalf("LastHitAt = %v, want nil", *response.LastHitAt)
 	}
-	if response.Time.IsZero() {
+	if !response.Time.IsZero() {
 		t.Fatal("Time was not set")
 	}
 }
