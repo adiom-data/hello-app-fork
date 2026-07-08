@@ -73,7 +73,7 @@ func helloHandler(db *sql.DB) http.HandlerFunc {
 func helloMessage() string {
 	secret := os.Getenv("MY_SECRET")
 	if secret == "" {
-		secret = "(MY_SECRET is not set)"
+		secret = "(MY_SECRET is not set!)"
 	}
 	return fmt.Sprintf("Hello from Go! MY_SECRET!: %s", secret)
 }
