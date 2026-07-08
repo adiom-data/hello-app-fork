@@ -22,7 +22,7 @@ func TestHelloMessage(t *testing.T) {
 		t.Setenv("MY_SECRET", "")
 
 		got := helloMessage()
-		want := "Hello from Go! MY_SECRET!: (MY_SECRET is not set)"
+		want := "Hello from Go! MY_SECRET!: (MY_SECRET is not set!)"
 		if got != want {
 			t.Fatalf("helloMessage() = %q, want %q", got, want)
 		}
