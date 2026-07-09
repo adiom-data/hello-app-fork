@@ -23,7 +23,7 @@ type helloResponse struct {
 }
 
 func main() {
-	log.Println("hi")
+	log.Println("hi1")
 	db, err := openDatabase()
 	if err != nil {
 		log.Fatal(err)
