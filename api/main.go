@@ -37,10 +37,10 @@ type sendEmailResponse struct {
 }
 
 type emailServiceRequest struct {
-	From    string   `json:"from"`
-	To      []string `json:"to"`
-	Subject string   `json:"subject"`
-	Text    string   `json:"text"`
+	From     string   `json:"from"`
+	To       []string `json:"to"`
+	Subject  string   `json:"subject"`
+	TextBody string   `json:"text_body"`
 }
 
 func main() {
@@ -101,10 +101,10 @@ func sendEmailHandler(client *http.Client) http.HandlerFunc {
 		domain := namespace + ".infrapad.ai"
 		from := "noreply@" + domain
 		serviceRequest := emailServiceRequest{
-			From:    from,
-			To:      []string{recipient},
-			Subject: "Hello",
-			Text:    "Hello from your namespace.",
+			From:     from,
+			To:       []string{recipient},
+			Subject:  "Hello",
+			TextBody: "Hello from your namespace.",
 		}
 
 		body, err := json.Marshal(serviceRequest)

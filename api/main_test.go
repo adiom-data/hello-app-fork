@@ -53,8 +53,8 @@ func TestSendEmailHandler(t *testing.T) {
 		if gotRequest.Subject != "Hello" {
 			t.Fatalf("Subject = %q, want Hello", gotRequest.Subject)
 		}
-		if gotRequest.Text != "Hello from your namespace." {
-			t.Fatalf("Text = %q, want canned text", gotRequest.Text)
+		if gotRequest.TextBody != "Hello from your namespace." {
+			t.Fatalf("TextBody = %q, want canned text", gotRequest.TextBody)
 		}
 
 		var response sendEmailResponse
