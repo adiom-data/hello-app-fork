@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -22,6 +25,24 @@ type helloResponse struct {
 	DBError   string     `json:"dbError,omitempty"`
 }
 
+type sendEmailRequest struct {
+	Recipient string `json:"recipient"`
+}
+
+type sendEmailResponse struct {
+	Message string `json:"message"`
+	From    string `json:"from"`
+	To      string `json:"to"`
+	Domain  string `json:"domain"`
+}
+
+type emailServiceRequest struct {
+	From    string   `json:"from"`
+	To      []string `json:"to"`
+	Subject string   `json:"subject"`
+	Text    string   `json:"text"`
+}
+
 func main() {
 	log.Println("hi3")
 	db, err := openDatabase()
@@ -34,6 +55,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/hello", helloHandler(db))
+	mux.HandleFunc("POST /api/email", sendEmailHandler(http.DefaultClient))
 	mux.HandleFunc("GET /healthz", healthHandler(db))
 
 	port := os.Getenv("PORT")
@@ -46,6 +68,104 @@ func main() {
 	if err := http.ListenAndServe(addr, logRequests(mux)); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func sendEmailHandler(client *http.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request sendEmailRequest
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Invalid JSON request."})
+			return
+		}
+
+		recipient := strings.TrimSpace(request.Recipient)
+		if recipient == "" || !strings.Contains(recipient, "@") {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Enter a valid recipient email address."})
+			return
+		}
+
+		platformURL := strings.TrimRight(os.Getenv("PLATFORM_SERVICES_URL"), "/")
+		platformKey := os.Getenv("PLATFORM_SERVICES_KEY")
+		if platformURL == "" || platformKey == "" {
+			writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "Platform Services is not configured."})
+			return
+		}
+
+		namespace, err := currentNamespace()
+		if err != nil {
+			log.Printf("load namespace: %v", err)
+			writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "Namespace metadata is not available."})
+			return
+		}
+
+		domain := namespace + ".infrapad.ai"
+		from := "noreply@" + domain
+		serviceRequest := emailServiceRequest{
+			From:    from,
+			To:      []string{recipient},
+			Subject: "Hello",
+			Text:    "Hello from your namespace.",
+		}
+
+		body, err := json.Marshal(serviceRequest)
+		if err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Unable to build email request."})
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+		defer cancel()
+
+		serviceURL := platformURL + "/infrapad.v1.EmailService/SendNamespaceEmail"
+		upstreamRequest, err := http.NewRequestWithContext(ctx, http.MethodPost, serviceURL, bytes.NewReader(body))
+		if err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "Unable to build Platform Services request."})
+			return
+		}
+		upstreamRequest.Header.Set("Authorization", "Bearer "+platformKey)
+		upstreamRequest.Header.Set("Connect-Protocol-Version", "1")
+		upstreamRequest.Header.Set("Content-Type", "application/json")
+
+		upstreamResponse, err := client.Do(upstreamRequest)
+		if err != nil {
+			log.Printf("send namespace email: %v", err)
+			writeJSON(w, http.StatusBadGateway, map[string]string{"error": "Platform Services email request failed."})
+			return
+		}
+		defer upstreamResponse.Body.Close()
+
+		if upstreamResponse.StatusCode < 200 || upstreamResponse.StatusCode >= 300 {
+			detail, _ := io.ReadAll(io.LimitReader(upstreamResponse.Body, 2048))
+			log.Printf("send namespace email: platform services returned %d: %s", upstreamResponse.StatusCode, strings.TrimSpace(string(detail)))
+			writeJSON(w, http.StatusBadGateway, map[string]string{"error": "Platform Services rejected the email request."})
+			return
+		}
+
+		writeJSON(w, http.StatusOK, sendEmailResponse{
+			Message: "Email sent.",
+			From:    from,
+			To:      recipient,
+			Domain:  domain,
+		})
+	}
+}
+
+func currentNamespace() (string, error) {
+	if namespace := strings.TrimSpace(os.Getenv("POD_NAMESPACE")); namespace != "" {
+		return namespace, nil
+	}
+
+	data, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+	if err != nil {
+		return "", err
+	}
+
+	namespace := strings.TrimSpace(string(data))
+	if namespace == "" {
+		return "", fmt.Errorf("service account namespace file is empty")
+	}
+
+	return namespace, nil
 }
 
 func helloHandler(db *sql.DB) http.HandlerFunc {

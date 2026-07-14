@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Music2, RefreshCcw, Server, VolumeX } from "lucide-react";
+import { Mail, Music2, RefreshCcw, Send, Server, VolumeX } from "lucide-react";
 
 const noteToFrequency = {
   C3: 130.81,
@@ -56,6 +56,10 @@ export default function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [recipient, setRecipient] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(null);
+  const [emailError, setEmailError] = useState("");
   const audioRef = useRef(null);
   const hitCounterValue = formatHitCount(hello?.hitCount);
 
@@ -176,6 +180,35 @@ export default function App() {
     setMusicPlaying(true);
   }
 
+  async function sendEmail(event) {
+    event.preventDefault();
+    setEmailSending(true);
+    setEmailStatus(null);
+    setEmailError("");
+
+    try {
+      const response = await fetch("/api/email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ recipient }),
+      });
+      const body = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(body.error || `Request failed with ${response.status}`);
+      }
+
+      setEmailStatus(body);
+      setRecipient("");
+    } catch (err) {
+      setEmailError(err instanceof Error ? err.message : "Unable to send email");
+    } finally {
+      setEmailSending(false);
+    }
+  }
+
   return (
     <main className="app-shell">
       <section className="hero">
@@ -246,6 +279,40 @@ export default function App() {
               {hello?.dbError ? <p className="error inline">{hello.dbError}</p> : null}
             </div>
           )}
+        </div>
+
+        <div className="email-card">
+          <div className="email-header">
+            <div className="response-title">
+              <Mail aria-hidden="true" />
+              <span>Namespace Email</span>
+            </div>
+          </div>
+
+          <form className="email-form" onSubmit={sendEmail}>
+            <label htmlFor="recipient-email">Recipient</label>
+            <div className="email-controls">
+              <input
+                id="recipient-email"
+                type="email"
+                required
+                value={recipient}
+                placeholder="user@example.com"
+                onChange={(event) => setRecipient(event.target.value)}
+              />
+              <button type="submit" disabled={emailSending}>
+                <Send aria-hidden="true" />
+                <span>{emailSending ? "Sending" : "Send"}</span>
+              </button>
+            </div>
+          </form>
+
+          {emailError ? <p className="error inline email-message">{emailError}</p> : null}
+          {emailStatus ? (
+            <p className="success email-message">
+              Sent from {emailStatus.from} to {emailStatus.to}.
+            </p>
+          ) : null}
         </div>
       </section>
 
