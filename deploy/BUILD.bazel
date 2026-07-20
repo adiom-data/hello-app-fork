@@ -51,6 +51,7 @@ image_kustomization(
     source_prefix = "deploy/app",
     srcs = [":app_deploy_srcs"],
     stamp = True,
+    wait = True,
 )
 
 image_kustomization(
@@ -68,6 +69,7 @@ image_kustomization(
     source_prefix = "deploy/app",
     srcs = [":app_deploy_srcs"],
     stamp = True,
+    wait = True,
 )
 
 image_kustomization(
