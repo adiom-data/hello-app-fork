@@ -44,7 +44,7 @@ type emailServiceRequest struct {
 }
 
 func main() {
-	log.Println("hi9")
+	log.Println("hi10")
 	db, err := openDatabase()
 	if err != nil {
 		log.Fatal(err)
